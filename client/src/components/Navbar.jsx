@@ -39,7 +39,7 @@ const Navbar = () => {
             <Link to="/admin" className="hover:text-pink-600">Admin Dashboard</Link>
             <Link to="/admin/add-product" className="hover:text-pink-600">Add Product</Link>
             <button onClick={handleLogout} className="text-red-600 hover:underline">
-              Logout button
+              Logout button added
             </button>
           </>
         )}
