@@ -1,31 +1,36 @@
-import express from 'express';
-import multer from 'multer';
+import express from "express";
 import {
   createProduct,
   getAllProducts,
   getProductById,
-  deleteProduct
-} from '../controllers/productController.js';
-import { protect, adminOnly } from '../middleware/authMiddleware.js';
+  updateProduct,
+  deleteProduct,
+  checkAvailability,
+  addRating,
+  getProductStats,
+  getProductBookedDates
+} from "../controllers/productController.js";
+import upload from "../middleware/upload.middleware.js";
+import { protect, adminOnly as verifyAdmin } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-// Configure Multer for image upload
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) =>
-    cb(null, `${Date.now()}-${file.originalname}`),
-});
-const upload = multer({ storage });
-
-// ✅ Public Route - Get all products
+// Public routes (no authentication required)
 router.get("/", getAllProducts);
-
-// ✅ Public Route - Get product by ID
+router.get("/stats", getProductStats); // Public stats endpoint
 router.get("/:id", getProductById);
+router.post("/:id/check-availability", checkAvailability);
 
-// ✅ Admin Routes
-router.post("/", protect, adminOnly, upload.single("image"), createProduct);
-router.delete("/:id", protect, adminOnly, deleteProduct);
+// Protected routes (authentication required)
+router.post("/:id/rating", addRating);
+
+// Admin only routes
+router.post("/create",protect, verifyAdmin, upload.array("images", 10), createProduct); // max 10 images
+router.put("/:id", protect, verifyAdmin, upload.array("images", 10), updateProduct);
+router.delete("/:id", verifyAdmin, deleteProduct);
+router.get('/:id/booked-dates', getProductBookedDates);
+
+// Admin stats endpoint (if you want separate admin stats)
+router.get("/admin/stats", verifyAdmin, getProductStats);
 
 export default router;

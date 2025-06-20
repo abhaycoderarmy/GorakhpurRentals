@@ -1,14 +1,29 @@
 import express from 'express';
-import { registerUser, loginUser, getAllUsers } from '../controllers/userController.js';
-import { protect, adminOnly } from '../middleware/authMiddleware.js';
+import {
+  sendOtpToEmail,
+  verifyOtpAndRegister,
+  loginUser,
+  googleLogin,
+  getUserProfile,
+  updateUserProfile,
+  resetPassword,
+} from "../controllers/userController.js";
+import { authenticate } from '../middleware/auth.middleware.js';
+import multer from "multer";
+
+const upload = multer({ dest: "uploads/" });
 
 const router = express.Router();
 
-// Public
-router.post('/register', registerUser);
+router.post('/send-otp', sendOtpToEmail);
+router.post('/verify-otp', verifyOtpAndRegister);
 router.post('/login', loginUser);
+router.post('/google-login', googleLogin);
 
-// Admin only
-router.get('/', protect, adminOnly, getAllUsers);
+
+// Profile
+router.get("/profile", authenticate, getUserProfile);
+router.put("/profile", authenticate, upload.single("profilePhoto"), updateUserProfile);
+router.put("/reset-password", authenticate, resetPassword);
 
 export default router;

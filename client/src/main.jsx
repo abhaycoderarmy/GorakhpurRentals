@@ -1,16 +1,22 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+import './index.css'
+import { BrowserRouter } from 'react-router-dom'
+import { GoogleOAuthProvider } from '@react-oauth/google'
+import { AuthProvider } from "./context/AuthContext";
+import { CartProvider } from "./context/CartContext";
+
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  <GoogleOAuthProvider clientId="your-google-client-id">
     <BrowserRouter>
       <AuthProvider>
+        <CartProvider>
         <App />
+        </CartProvider>
+
       </AuthProvider>
     </BrowserRouter>
-  </React.StrictMode>
-);
+  </GoogleOAuthProvider>
+)
